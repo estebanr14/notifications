@@ -1,0 +1,10 @@
+import { IntersectionType, PartialType } from '@nestjs/swagger';
+import { {{pascalCase moduleName}}Dto } from './{{kebabCase moduleName}}.dto';
+import { PaginationDto } from '@app/database';
+
+export class GetList{{pascalCase moduleName}}FiltersDto extends PartialType({{pascalCase moduleName}}Dto) {}
+
+export class GetList{{pascalCase moduleName}}QueryDto extends IntersectionType(
+GetList{{pascalCase moduleName}}FiltersDto,
+PaginationDto,
+) {}

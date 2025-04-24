@@ -1,0 +1,21 @@
+import { ICommand } from '@nestjs/cqrs';
+{{#ifEquals operation 'create'}}
+import { Create{{pascalCase moduleName}}Dto } from '../../presentation/dtos/create-{{kebabCase moduleName}}.dto';
+{{/ifEquals}}
+{{#ifEquals operation 'update'}}
+import { Update{{pascalCase moduleName}}Dto } from '../../presentation/dtos/update-{{kebabCase moduleName}}.dto';
+{{/ifEquals}}
+
+export class {{pascalCase operation}}{{pascalCase moduleName}}Command implements ICommand {
+{{#ifEquals operation 'create'}}
+constructor(public readonly payload: Create{{pascalCase moduleName}}Dto) {}
+{{/ifEquals}}
+
+{{#ifEquals operation 'update'}}
+constructor(public readonly id: string, public readonly payload: Update{{pascalCase moduleName}}Dto) {}
+{{/ifEquals}}
+
+{{#ifEquals operation 'delete'}}
+constructor(public readonly id: string) {}
+{{/ifEquals}}
+}

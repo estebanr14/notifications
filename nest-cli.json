@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/backend/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/backend/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/backend",
+  "projects": {
+    "backend": {
+      "type": "application",
+      "root": "apps/backend",
+      "entryFile": "main",
+      "sourceRoot": "apps/backend/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/backend/tsconfig.app.json"
+      }
+    },
+    "backoffice": {
+      "type": "application",
+      "root": "apps/backoffice",
+      "entryFile": "main",
+      "sourceRoot": "apps/backoffice/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/backoffice/tsconfig.app.json"
+      }
+    },
+    "config": {
+      "type": "library",
+      "root": "libs/config",
+      "entryFile": "index",
+      "sourceRoot": "libs/config/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/config/tsconfig.lib.json"
+      }
+    },
+    "database": {
+      "type": "library",
+      "root": "libs/database",
+      "entryFile": "index",
+      "sourceRoot": "libs/database/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/database/tsconfig.lib.json"
+      }
+    },
+    "email": {
+      "type": "library",
+      "root": "libs/email",
+      "entryFile": "index",
+      "sourceRoot": "libs/email/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/email/tsconfig.lib.json"
+      }
+    },
+    "exchange-integration": {
+      "type": "library",
+      "root": "libs/exchange-integration",
+      "entryFile": "index",
+      "sourceRoot": "libs/exchange-integration/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/exchange-integration/tsconfig.lib.json"
+      }
+    },
+    "logistic-provider": {
+      "type": "library",
+      "root": "libs/logistic-provider",
+      "entryFile": "index",
+      "sourceRoot": "libs/logistic-provider/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/logistic-provider/tsconfig.lib.json"
+      }
+    },
+    "notifications": {
+      "type": "application",
+      "root": "apps/notifications",
+      "entryFile": "main",
+      "sourceRoot": "apps/notifications/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notifications/tsconfig.app.json"
+      }
+    },
+    "rabbit-mq": {
+      "type": "library",
+      "root": "libs/rabbit-mq",
+      "entryFile": "index",
+      "sourceRoot": "libs/rabbit-mq/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/rabbit-mq/tsconfig.lib.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    },
+    "sms": {
+      "type": "library",
+      "root": "libs/sms",
+      "entryFile": "index",
+      "sourceRoot": "libs/sms/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sms/tsconfig.lib.json"
+      }
+    },
+    "whatsapp": {
+      "type": "library",
+      "root": "libs/whatsapp",
+      "entryFile": "index",
+      "sourceRoot": "libs/whatsapp/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/whatsapp/tsconfig.lib.json"
+      }
+    }
+  }
+}

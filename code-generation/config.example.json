@@ -1,0 +1,37 @@
+{
+    "moduleName": "user",
+    "fields": [
+        {
+            "name": "id",
+            "type": "string",
+            "required": false
+        },
+        {
+            "name": "type",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "username",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "email",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "isActive",
+            "type": "boolean",
+            "required": false
+        }
+    ],
+    "operations": [
+        "create",
+        "update",
+        "delete",
+        "getById",
+        "getList"
+    ]
+}

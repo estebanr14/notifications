@@ -1,0 +1,63 @@
+services:
+
+  notifications:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        NODE_ENV: local
+        APP_NAME: notifications
+    image: notifications
+    container_name: notifications
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=local
+      - APP_NAME=notifications
+      - RABBIT_HOST=rabbitmq
+      - APP_PORT=5003
+    ports:
+      - "${APP_PORT:-5003}:5003"
+    volumes:
+      - ./apps/notifications:/app/apps/notifications
+      - ./libs:/app/libs
+      - /app/node_modules
+    command: yarn start:notifications:prod
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    hostname: rabbit
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
+
+
+networks:
+  app-network:
+    driver: bridge

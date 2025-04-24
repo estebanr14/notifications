@@ -1,0 +1,86 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'infrastructure/**'
+
+env:
+  NODE_VERSION: '20.x'
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ENVIRONMENT: 'dev'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ['backend', 'backoffice', 'notifications']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        env:
+          SERVICE_NAME: ${{ matrix.service }}
+          IMAGE_TAG: ${{ github.sha }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_PREFIX }}-${{ matrix.service }}-${{ env.ENVIRONMENT }}
+        run: |
+          # Obtener el puerto del contenedor según el servicio
+          CONTAINER_PORT=$(case ${{ matrix.service }} in
+            "backend") echo "8000" ;;
+            "backoffice") echo "8001" ;;
+            "notifications") echo "5003" ;;
+          esac)
+
+          docker build \
+            --build-arg NODE_ENV=${{ env.ENVIRONMENT }} \
+            --build-arg APP_NAME=${{ env.SERVICE_NAME }} \
+            --build-arg APP_PORT=$CONTAINER_PORT \
+            -t ${ECR_REPOSITORY}:${IMAGE_TAG} \
+            -t ${ECR_REPOSITORY}:latest \
+            -f Dockerfile .
+
+          docker push ${ECR_REPOSITORY}:${IMAGE_TAG}
+          docker push ${ECR_REPOSITORY}:latest
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --service ${{ matrix.service }} \
+            --force-new-deployment
+
+      - name: Wait for ECS deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --services ${{ matrix.service }} 

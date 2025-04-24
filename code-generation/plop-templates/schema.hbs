@@ -1,0 +1,32 @@
+import { Schema, HydratedDocument } from 'mongoose';
+import { I{{pascalCase moduleName}} } from '../../domain/entities/{{kebabCase moduleName}}.interface';
+
+export type {{pascalCase moduleName}}Document = HydratedDocument<I{{pascalCase moduleName}}>;
+
+    const {{pascalCase moduleName}}SchemaDefinition = {
+    {{#each fields}}
+    {{#unless (or (equals name 'createdAt') (equals name 'id') (equals name 'updatedAt') )}}
+    {{name}}: {
+    type: {{#ifEquals type 'string'}}String{{else ifEquals type 'number'}}Number{{else ifEquals type
+    'boolean'}}Boolean{{else ifEquals type 'date'}}Date{{/ifEquals}},
+    required: {{required}}
+    },
+    {{/unless}}
+    {{/each}}
+    };
+
+    export const {{pascalCase moduleName}}Schema = new Schema<I{{pascalCase moduleName}}>(
+        {{pascalCase moduleName}}SchemaDefinition,
+        {
+        timestamps: true,
+        toJSON: {
+        virtuals: true,
+        transform: (_doc, ret) => {
+        ret.id = ret._id.toString();
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+        },
+        },
+        }
+        );

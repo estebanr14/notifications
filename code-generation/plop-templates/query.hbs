@@ -1,0 +1,21 @@
+import { IQuery } from '@nestjs/cqrs';
+
+{{#ifEquals operation 'getById'}}
+export class Get{{pascalCase moduleName}}Query implements IQuery {
+constructor(public readonly id: string) {}
+}
+{{/ifEquals}}
+
+{{#ifEquals operation 'getList'}}
+import { GetList{{pascalCase moduleName}}FiltersDto } from '../../presentation/dtos/get-list-{{kebabCase
+moduleName}}s.dto';
+import { PaginationDto } from '@app/database';
+
+export class GetList{{pascalCase moduleName}}Query implements IQuery {
+constructor(
+public readonly filters: GetList{{pascalCase moduleName}}FiltersDto = {},
+public readonly pagination: PaginationDto = { page: 1, limit:
+10, sortField: 'createdAt', sortOrder: 'ASC' },
+) {}
+}
+{{/ifEquals}}

@@ -1,0 +1,41 @@
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Logger } from '@nestjs/common';
+import { {{pascalCase moduleName}}Service } from '../{{kebabCase moduleName}}.service';
+import { {{pascalCase operation}}{{pascalCase moduleName}}Command } from
+'../commands/{{operation}}-{{kebabCase moduleName}}.command';
+import { {{pascalCase moduleName}}Mapper } from '../mappers/{{kebabCase moduleName}}.mapper';
+import { {{pascalCase moduleName}} } from '../../domain/entities/{{kebabCase moduleName}}.entity';
+
+@CommandHandler({{pascalCase operation}}{{pascalCase moduleName}}Command)
+export class {{pascalCase operation}}{{pascalCase moduleName}}Handler
+implements ICommandHandler<{{pascalCase operation}}{{pascalCase moduleName}}Command>
+    {
+    private readonly logger = new Logger({{pascalCase operation}}{{pascalCase moduleName}}Handler.name);
+
+    constructor(private readonly {{camelCase moduleName}}Service: {{pascalCase moduleName}}Service) {}
+
+    async execute(command: {{pascalCase operation}}{{pascalCase moduleName}}Command): Promise<any> {
+        this.logger.log(`[handler]: Processing {{pascalCase operation}} for {{pascalCase moduleName}}`);
+
+        {{#ifEquals operation 'create'}}
+        const {{camelCase moduleName}}Entity = new {{pascalCase moduleName}}(command.payload);
+        const createdEntity = await this.{{camelCase moduleName}}Service.create({{camelCase moduleName}}Entity);
+        return {{pascalCase moduleName}}Mapper.toResponse(createdEntity);
+        {{/ifEquals}}
+
+        {{#ifEquals operation 'update'}}
+        const {{camelCase moduleName}}Entity = new {{pascalCase moduleName}}({
+        id: command.id,
+        ...command.payload,
+        });
+        const updatedEntity = await this.{{camelCase moduleName}}Service.update({{camelCase moduleName}}Entity.id,
+        {{camelCase moduleName}}Entity);
+        return {{pascalCase moduleName}}Mapper.toResponse(updatedEntity);
+        {{/ifEquals}}
+
+        {{#ifEquals operation 'delete'}}
+        await this.{{camelCase moduleName}}Service.delete(command.id);
+        this.logger.log(`[handler]: Successfully deleted {{pascalCase moduleName}} with ID ${command.id}`);
+        {{/ifEquals}}
+        }
+        }

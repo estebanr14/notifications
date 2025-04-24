@@ -1,0 +1,41 @@
+import { I{{pascalCase moduleName}} } from './{{kebabCase moduleName}}.interface';
+
+export class {{pascalCase moduleName}} {
+{{#each fields}}
+public readonly {{name}}: {{type}};
+{{/each}}
+public readonly createdAt?: Date;
+public readonly updatedAt?: Date;
+
+constructor(props: I{{pascalCase moduleName}}) {
+{{#each fields}}
+this.{{name}} = props.{{name}};
+{{/each}}
+this.createdAt = props.createdAt;
+this.updatedAt = props.updatedAt;
+}
+
+public static fromDatabase(document: I{{pascalCase moduleName}}): {{pascalCase moduleName}} {
+return new {{pascalCase moduleName}}(document);
+}
+
+public toDatabase(): I{{pascalCase moduleName}} {
+return {
+{{#each fields}}
+{{name}}: this.{{name}},
+{{/each}}
+createdAt: this.createdAt,
+updatedAt: this.updatedAt,
+};
+}
+
+public toPrimitives(): I{{pascalCase moduleName}} {
+return {
+{{#each fields}}
+{{name}}: this.{{name}},
+{{/each}}
+createdAt: this.createdAt,
+updatedAt: this.updatedAt,
+};
+}
+}

@@ -1,0 +1,18 @@
+import { Injectable } from '@nestjs/common';
+import { BaseMongoRepository } from '@app/database/mongo/base.mongo.repository';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { {{pascalCase moduleName}}Document } from '../schemas/{{kebabCase moduleName}}.schema';
+import { MongoConstantsProvider } from '@app/database';
+import { I{{pascalCase moduleName}} } from '../../domain/entities/{{kebabCase moduleName}}.interface';
+
+@Injectable()
+export class {{pascalCase moduleName}}MongoRepository extends BaseMongoRepository<{{pascalCase moduleName}}Document,
+    I{{pascalCase moduleName}}> {
+    constructor(
+    @InjectModel(MongoConstantsProvider.Mongo{{pascalCase moduleName}}Schema)
+    private readonly {{camelCase moduleName}}Model: Model<{{pascalCase moduleName}}Document>,
+        ) {
+        super({{camelCase moduleName}}Model, MongoConstantsProvider.Mongo{{pascalCase moduleName}}Schema);
+        }
+        }

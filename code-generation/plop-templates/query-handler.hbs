@@ -1,0 +1,55 @@
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Logger } from '@nestjs/common';
+import { {{pascalCase moduleName}}Service } from '../{{kebabCase moduleName}}.service';
+import { {{pascalCase moduleName}}Mapper } from '../mappers/{{kebabCase moduleName}}.mapper';
+import { {{pascalCase moduleName}}ResponseDto } from '../../presentation/dtos/{{kebabCase moduleName}}.response.dto';
+{{#ifEquals operation 'getById'}}
+import { Get{{pascalCase moduleName}}Query } from '../queries/get-{{kebabCase moduleName}}.query';
+{{/ifEquals}}
+{{#ifEquals operation 'getList'}}
+import { GetList{{pascalCase moduleName}}Query } from '../queries/get-list-{{kebabCase moduleName}}.query';
+import { PaginatedResult, PaginatedParams } from '@app/database';
+{{/ifEquals}}
+
+@QueryHandler({{#ifEquals operation 'getById'}}Get{{pascalCase moduleName}}Query{{/ifEquals}}{{#ifEquals operation
+'getList'}}GetList{{pascalCase moduleName}}Query{{/ifEquals}})
+export class {{#ifEquals operation 'getById'}}Get{{pascalCase moduleName}}Handler{{/ifEquals}}{{#ifEquals operation
+'getList'}}GetList{{pascalCase moduleName}}Handler{{/ifEquals}}
+implements IQueryHandler<{{#ifEquals operation 'getById' }}Get{{pascalCase moduleName}}Query{{/ifEquals}}{{#ifEquals
+    operation 'getList' }}GetList{{pascalCase moduleName}}Query{{/ifEquals}}> {
+    private readonly logger = new Logger({{#ifEquals operation 'getById'}}Get{{pascalCase
+    moduleName}}Handler{{/ifEquals}}{{#ifEquals operation 'getList'}}GetList{{pascalCase
+    moduleName}}Handler{{/ifEquals}}.name);
+
+    constructor(private readonly {{camelCase moduleName}}Service: {{pascalCase moduleName}}Service) {}
+
+    async execute(query: {{#ifEquals operation 'getById'}}Get{{pascalCase moduleName}}Query{{/ifEquals}}{{#ifEquals
+    operation 'getList'}}GetList{{pascalCase moduleName}}Query{{/ifEquals}}): Promise<{{#ifEquals operation 'getById'
+        }}{{pascalCase moduleName}}ResponseDto{{/ifEquals}}{{#ifEquals operation 'getList'
+        }}PaginatedResult<{{pascalCase moduleName}}ResponseDto>{{/ifEquals}}> {
+        this.logger.log(`[handler]: Executing query for {{pascalCase moduleName}}`);
+
+        {{#ifEquals operation 'getById'}}
+        const entity = await this.{{camelCase moduleName}}Service.findById(query.id);
+        return {{pascalCase moduleName}}Mapper.toResponse(entity);
+        {{/ifEquals}}
+
+        {{#ifEquals operation 'getList'}}
+        const sortField = query.pagination.sortField || 'createdAt';
+        const sortOrder = query.pagination.sortOrder?.toUpperCase() === 'ASC' ? 1 : -1;
+        const params = new PaginatedParams(
+        query.pagination.page,
+        query.pagination.limit,
+        { [sortField]: sortOrder },
+        query.filters,
+        );
+
+        const paginatedResult = await this.{{camelCase moduleName}}Service.findAll(params);
+
+        return {
+        ...paginatedResult,
+        results: paginatedResult.results.map((entity) => {{pascalCase moduleName}}Mapper.toResponse(entity)),
+        };
+        {{/ifEquals}}
+        }
+        }

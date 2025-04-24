@@ -1,0 +1,11 @@
+export interface I{{pascalCase moduleName}} {
+{{#each fields}}
+{{#if required}}
+{{name}}: {{type}};
+{{else}}
+{{name}}?: {{type}};
+{{/if}}
+{{/each}}
+createdAt?: Date;
+updatedAt?: Date;
+}

@@ -1,0 +1,6 @@
+import { OmitType } from '@nestjs/swagger';
+import { {{pascalCase moduleName}}Dto } from './{{kebabCase moduleName}}.dto';
+
+export class {{pascalCase moduleName}}ResponseDto extends OmitType({{pascalCase moduleName}}Dto, [
+'updatedAt',
+] as const) {}

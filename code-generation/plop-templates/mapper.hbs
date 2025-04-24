@@ -1,0 +1,9 @@
+import { plainToInstance } from 'class-transformer';
+import { {{pascalCase moduleName}} } from '../../domain/entities/{{kebabCase moduleName}}.entity';
+import { {{pascalCase moduleName}}ResponseDto } from '../../presentation/dtos/{{kebabCase moduleName}}.response.dto';
+
+export class {{pascalCase moduleName}}Mapper {
+static toResponse(entity: {{pascalCase moduleName}}): {{pascalCase moduleName}}ResponseDto {
+return plainToInstance({{pascalCase moduleName}}ResponseDto, entity.toPrimitives());
+}
+}

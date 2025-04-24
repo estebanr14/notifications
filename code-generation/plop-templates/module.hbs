@@ -1,0 +1,43 @@
+import { Module } from '@nestjs/common';
+import {{camelCase moduleName}}Providers from './application/providers/{{kebabCase moduleName}}.providers';
+import { {{pascalCase moduleName}}Controller } from './presentation/http/{{kebabCase moduleName}}.controller';
+import { Create{{pascalCase moduleName}}Handler } from './application/handlers/create-{{kebabCase moduleName}}.handler';
+{{#ifIncludes operations 'update'}}
+import { Update{{pascalCase moduleName}}Handler } from './application/handlers/update-{{kebabCase moduleName}}.handler';
+{{/ifIncludes}}
+{{#ifIncludes operations 'getById'}}
+import { Get{{pascalCase moduleName}}Handler } from './application/handlers/get-{{kebabCase moduleName}}.handler';
+{{/ifIncludes}}
+{{#ifIncludes operations 'getList'}}
+import { GetList{{pascalCase moduleName}}Handler } from './application/handlers/get-list-{{kebabCase
+moduleName}}.handler';
+{{/ifIncludes}}
+{{#ifIncludes operations 'delete'}}
+import { Delete{{pascalCase moduleName}}Handler } from './application/handlers/delete-{{kebabCase moduleName}}.handler';
+{{/ifIncludes}}
+
+const commandHandlers = [
+Create{{pascalCase moduleName}}Handler,
+{{#ifIncludes operations 'update'}}
+Update{{pascalCase moduleName}}Handler,
+{{/ifIncludes}}
+{{#ifIncludes operations 'delete'}}
+Delete{{pascalCase moduleName}}Handler,
+{{/ifIncludes}}
+];
+
+const queryHandlers = [
+{{#ifIncludes operations 'getById'}}
+Get{{pascalCase moduleName}}Handler,
+{{/ifIncludes}}
+{{#ifIncludes operations 'getList'}}
+GetList{{pascalCase moduleName}}Handler,
+{{/ifIncludes}}
+];
+
+@Module({
+providers: [...{{camelCase moduleName}}Providers, ...commandHandlers, ...queryHandlers],
+exports: [...{{camelCase moduleName}}Providers],
+controllers: [{{pascalCase moduleName}}Controller],
+})
+export class {{pascalCase moduleName}}Module {}

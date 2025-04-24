@@ -1,0 +1,40 @@
+import { Connection, Model } from 'mongoose';
+import { MongoConstantsProvider } from '@app/database/mongo/mongo.constants';
+import { {{pascalCase moduleName}}Schema } from '../../infraestructure/schemas/{{kebabCase moduleName}}.schema';
+import { FactoryProvider, Provider } from '@nestjs/common';
+import { {{pascalCase moduleName}}MongoRepository } from
+'../../infraestructure/repositories/{{kebabCase moduleName}}.mongo.repository';
+import { {{pascalCase moduleName}}Service } from '../{{kebabCase moduleName}}.service';
+import { I{{pascalCase moduleName}} } from '../../domain/entities/{{kebabCase moduleName}}.interface';
+
+const {{pascalCase moduleName}}DocumentProvider = {
+provide: MongoConstantsProvider.Mongo{{pascalCase moduleName}}Schema,
+useFactory: (connection: Connection): Model<I{{pascalCase moduleName}}> =>
+    connection.model<I{{pascalCase moduleName}}>(
+        '{{pascalCase moduleName}}',
+        {{pascalCase moduleName}}Schema,
+        ),
+        inject: [MongoConstantsProvider.MongoConnection],
+        };
+
+        const Mongo{{pascalCase moduleName}}RepositoryProvider: FactoryProvider<{{pascalCase
+            moduleName}}MongoRepository> = {
+            inject: [MongoConstantsProvider.Mongo{{pascalCase moduleName}}Schema],
+            provide: MongoConstantsProvider.Mongo{{pascalCase moduleName}}Repository,
+            useFactory: (model) => new {{pascalCase moduleName}}MongoRepository(model),
+            };
+
+            const {{pascalCase moduleName}}ServiceProvider = {
+            provide: {{pascalCase moduleName}}Service,
+            useFactory: (repository: {{pascalCase moduleName}}MongoRepository) =>
+            new {{pascalCase moduleName}}Service(repository),
+            inject: [MongoConstantsProvider.Mongo{{pascalCase moduleName}}Repository],
+            };
+
+            const {{pascalCase moduleName}}Providers: Provider[] = [
+            Mongo{{pascalCase moduleName}}RepositoryProvider,
+            {{pascalCase moduleName}}DocumentProvider,
+            {{pascalCase moduleName}}ServiceProvider,
+            ];
+
+            export default {{pascalCase moduleName}}Providers;

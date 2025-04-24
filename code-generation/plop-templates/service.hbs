@@ -1,0 +1,56 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { {{pascalCase moduleName}}MongoRepository } from
+'../infraestructure/repositories/{{kebabCase moduleName}}.mongo.repository';
+import { {{pascalCase moduleName}} } from '../domain/entities/{{kebabCase moduleName}}.entity';
+import { PaginatedParams, PaginatedResult } from '@app/database';
+
+@Injectable()
+export class {{pascalCase moduleName}}Service {
+constructor(private readonly repository: {{pascalCase moduleName}}MongoRepository) {}
+
+{{#each operations}}
+{{#ifEquals this 'create'}}
+async create(payload: {{pascalCase ../moduleName}}): Promise<{{pascalCase ../moduleName}}> {
+    const created = await this.repository.create(payload.toDatabase());
+    return {{pascalCase ../moduleName}}.fromDatabase(created);
+    }
+    {{/ifEquals}}
+
+    {{#ifEquals this 'update'}}
+    async update(id: string, payload: Partial<{{pascalCase ../moduleName}}>): Promise<{{pascalCase ../moduleName}}>
+            {
+            const updated = await this.repository.update({ _id: id }, payload);
+            if (!updated) throw new NotFoundException(`{{pascalCase ../moduleName}} with ID ${id} not found`);
+            return {{pascalCase ../moduleName}}.fromDatabase(updated);
+            }
+            {{/ifEquals}}
+
+            {{#ifEquals this 'delete'}}
+            async delete(id: string): Promise<void> {
+                const result = await this.repository.delete({ _id: id });
+                if (!result) throw new NotFoundException(`{{pascalCase ../moduleName}} with ID ${id} not found`);
+                }
+                {{/ifEquals}}
+
+                {{#ifEquals this 'getById'}}
+                async findById(id: string): Promise<{{pascalCase ../moduleName}}> {
+                    const document = await this.repository.findById(id);
+                    if (!document) throw new NotFoundException(`{{pascalCase ../moduleName}} with ID ${id} not
+                    found`);
+                    return {{pascalCase ../moduleName}}.fromDatabase(document);
+                    }
+                    {{/ifEquals}}
+
+                    {{#ifEquals this 'getList'}}
+                    async findAll(params: PaginatedParams): Promise<PaginatedResult<{{pascalCase ../moduleName}}>> {
+                        const paginatedResult = await this.repository.paginatedSearch(params);
+
+                        return {
+                        ...paginatedResult,
+                        results: paginatedResult.results.map((doc) => {{pascalCase
+                        ../moduleName}}.fromDatabase(doc)),
+                        };
+                        }
+                        {{/ifEquals}}
+                        {{/each}}
+                        }

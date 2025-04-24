@@ -1,0 +1,62 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+IsString,
+IsNumber,
+IsBoolean,
+IsOptional,
+IsDate,
+} from 'class-validator';
+
+export class {{pascalCase moduleName}}Dto {
+
+{{~#each fields}}
+
+@ApiProperty({
+description: '{{name}}',
+required: {{required}},
+})
+
+{{~#ifEquals type 'string'}}
+
+@IsString()
+{{/ifEquals~}}
+
+{{~#ifEquals type 'number'}}
+
+@IsNumber()
+{{/ifEquals~}}
+
+{{~#ifEquals type 'boolean'}}
+
+@IsBoolean()
+{{/ifEquals~}}
+
+{{~#ifEquals type 'date'}}
+
+@IsDate()
+{{/ifEquals~}}
+
+{{~#unless required}}
+
+@IsOptional()
+{{/unless~}}
+readonly {{name}}: {{#ifEquals type 'date'}}Date{{else}}{{type}}{{/ifEquals}};
+
+{{/each~}}
+
+@ApiProperty({
+description: 'createdAt',
+required: false,
+})
+@IsDate()
+@IsOptional()
+readonly createdAt: Date;
+
+@ApiProperty({
+description: 'updatedAt',
+required: false,
+})
+@IsDate()
+@IsOptional()
+readonly updatedAt: Date;
+}

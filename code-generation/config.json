@@ -1,0 +1,86 @@
+{
+    "moduleName": "campaign",
+    "fields": [
+        {
+            "name": "id",
+            "type": "string",
+            "required": false
+        },
+        {
+            "name": "name",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "description",
+            "type": "string",
+            "required": false
+        },
+        {
+            "name": "status",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "finishDate",
+            "type": "Date",
+            "required": false
+        },
+        {
+            "name": "template",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "templateArgs",
+            "type": "object",
+            "required": false
+        },
+        {
+            "name": "campaingFile",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "messageType",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "messageCategory",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "messageToSend",
+            "type": "number",
+            "required": false
+        },
+        {
+            "name": "messageFailed",
+            "type": "string",
+            "required": false
+        },
+        {
+            "name": "messageSent",
+            "type": "number",
+            "required": false
+        },
+        {
+            "name": "createdAt",
+            "type": "date",
+            "required": false
+        },
+        {
+            "name": "admin",
+            "type": "string",
+            "required": true
+        }
+        
+    ],
+    "operations": [
+        "create",
+        "getList",
+        "getById"
+    ]
+}

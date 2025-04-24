@@ -1,0 +1,129 @@
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { NestCqrsCaller } from '@app/shared/cqrs/nest-cqrs-caller.service';
+import { ApiTags, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+{{#ifIncludes operations 'create'}}
+import { Create{{pascalCase moduleName}}Command } from '../../application/commands/create-{{kebabCase
+moduleName}}.command';
+import { Create{{pascalCase moduleName}}Dto } from '../dtos/create-{{kebabCase moduleName}}.dto';
+{{/ifIncludes}}
+{{#ifIncludes operations 'update'}}
+import { Update{{pascalCase moduleName}}Command } from '../../application/commands/update-{{kebabCase
+moduleName}}.command';
+import { Update{{pascalCase moduleName}}Dto } from '../dtos/update-{{kebabCase moduleName}}.dto';
+{{/ifIncludes}}
+{{#ifIncludes operations 'delete'}}
+import { Delete{{pascalCase moduleName}}Command } from '../../application/commands/delete-{{kebabCase
+moduleName}}.command';
+{{/ifIncludes}}
+{{#ifIncludes operations 'getById'}}
+import { Get{{pascalCase moduleName}}Query } from '../../application/queries/get-{{kebabCase moduleName}}.query';
+{{/ifIncludes}}
+{{#ifIncludes operations 'getList'}}
+import { GetList{{pascalCase moduleName}}Query } from '../../application/queries/get-list-{{kebabCase
+moduleName}}.query';
+import { GetList{{pascalCase moduleName}}QueryDto } from '../dtos/get-list-{{kebabCase moduleName}}s.dto';
+{{/ifIncludes}}
+import { {{pascalCase moduleName}}ResponseDto } from '../dtos/{{kebabCase moduleName}}.response.dto';
+import {
+JwtAuthGuard,
+Role,
+Roles,
+RolesGuard,
+User,
+} from '@app/shared';
+
+@ApiTags('{{moduleName}}s')
+@Controller('{{kebabCase moduleName}}s')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+export class {{pascalCase moduleName}}Controller {
+constructor(private readonly cqrsCaller: NestCqrsCaller) {}
+
+{{#ifIncludes operations 'getById'}}
+@Get(':id')
+@Roles(Role.{{securityRole}})
+@ApiOperation({ summary: 'Retrieve a single {{pascalCase moduleName}} by ID' })
+@ApiParam({
+name: 'id',
+description: 'The unique identifier of the {{pascalCase moduleName}}',
+example: '60f718c9b7a8c00015d3f2c4',
+})
+@ApiResponse({
+status: 200,
+description: 'The {{pascalCase moduleName}} has been retrieved successfully.',
+type: {{pascalCase moduleName}}ResponseDto,
+})
+async getById(@Param('id') id: string): Promise<{{pascalCase moduleName}}ResponseDto> {
+    return this.cqrsCaller.query(new Get{{pascalCase moduleName}}Query(id));
+    }
+    {{/ifIncludes}}
+
+    {{#ifIncludes operations 'getList'}}
+    @Get()
+    @Roles(Role.{{securityRole}})
+    @ApiOperation({ summary: 'Retrieve a list of {{pascalCase moduleName}}' })
+    @ApiResponse({
+    status: 200,
+    description: 'The list of {{pascalCase moduleName}} has been retrieved successfully.',
+    type: [{{pascalCase moduleName}}ResponseDto],
+    })
+    async getList(@Query() params: GetList{{pascalCase moduleName}}QueryDto): Promise<{{pascalCase
+        moduleName}}ResponseDto[]> {
+        const { page, limit, sortField, sortOrder, ...filters } = params;
+        return this.cqrsCaller.query(new GetList{{pascalCase moduleName}}Query(filters, { page, limit, sortField,
+        sortOrder }));
+        }
+        {{/ifIncludes}}
+
+        {{#ifIncludes operations 'create'}}
+        @Post()
+        @Roles(Role.{{securityRole}})
+        @ApiOperation({ summary: 'Create a new {{pascalCase moduleName}}' })
+        @ApiResponse({
+        status: 201,
+        description: 'The {{pascalCase moduleName}} has been created successfully.',
+        type: {{pascalCase moduleName}}ResponseDto,
+        })
+        async create(@Body() dto: Create{{pascalCase moduleName}}Dto): Promise<{{pascalCase moduleName}}ResponseDto> {
+            return this.cqrsCaller.dispatch(new Create{{pascalCase moduleName}}Command(dto));
+            }
+            {{/ifIncludes}}
+
+            {{#ifIncludes operations 'update'}}
+            @Put(':id')
+            @Roles(Role.{{securityRole}})
+            @ApiOperation({ summary: 'Update an existing {{pascalCase moduleName}}' })
+            @ApiParam({
+            name: 'id',
+            description: 'The unique identifier of the {{pascalCase moduleName}} to update',
+            example: '60f718c9b7a8c00015d3f2c4',
+            })
+            @ApiResponse({
+            status: 200,
+            description: 'The {{pascalCase moduleName}} has been updated successfully.',
+            type: {{pascalCase moduleName}}ResponseDto,
+            })
+            async update(@Param('id') id: string, @Body() dto: Update{{pascalCase moduleName}}Dto): Promise<{{pascalCase
+                moduleName}}ResponseDto> {
+                return this.cqrsCaller.dispatch(new Update{{pascalCase moduleName}}Command(id, dto));
+                }
+                {{/ifIncludes}}
+
+                {{#ifIncludes operations 'delete'}}
+                @Delete(':id')
+                @Roles(Role.{{securityRole}})
+                @ApiOperation({ summary: 'Delete an existing {{pascalCase moduleName}}' })
+                @ApiParam({
+                name: 'id',
+                description: 'The unique identifier of the {{pascalCase moduleName}} to delete',
+                example: '60f718c9b7a8c00015d3f2c4',
+                })
+                @ApiResponse({
+                status: 204,
+                description: 'The {{pascalCase moduleName}} has been deleted successfully.',
+                })
+                async delete(@Param('id') id: string): Promise<void> {
+                    return this.cqrsCaller.dispatch(new Delete{{pascalCase moduleName}}Command(id));
+                    }
+                    {{/ifIncludes}}
+                    }
